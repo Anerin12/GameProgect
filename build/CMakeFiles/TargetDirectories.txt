@@ -1,0 +1,3 @@
+/home/anerin/Документы/OOP_Game/build/CMakeFiles/GameProject.dir
+/home/anerin/Документы/OOP_Game/build/CMakeFiles/edit_cache.dir
+/home/anerin/Документы/OOP_Game/build/CMakeFiles/rebuild_cache.dir
