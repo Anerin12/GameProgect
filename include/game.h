@@ -7,18 +7,23 @@
 #include "tower.h"
 #include "ally.h"
 #include "spells/improveSpell.h"
+#include "config.h"
 #include <vector>
 #include <random>
 #include <iostream>
+#include <fstream>
+#include <format>
+#include <filesystem>
 
 class Game
 {
 private:
-    Player player_;
+    std::unique_ptr<Player> player_;
     Field field_;
     std::vector<Enemy*> enemies_;
     std::vector<EnemyHut *> enemyHuts_;
     bool isRuning_ = true;
+    int level_;
 
 
     //lb2
@@ -44,4 +49,12 @@ public:
     void callSpellManager();
     void allyManager();
     void improveManager();
+
+    //lb3
+    void newLevel();
+    void improvePlayer();
+    void improveEnemy();
+    void clearCharacter();
+    void saveGame();
+    void loadGame();
 };

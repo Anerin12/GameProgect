@@ -14,7 +14,7 @@ class Heand {
 
         void addSpell(SpellCard* spell);
         void deliteSpell(int index);
-        SpellCard *printHeand();
+        void printHeand();
         void generateRandomSpell();
 
         void info(int sp);
@@ -22,4 +22,7 @@ class Heand {
         SpellCard* chooseSpell();
 
         std::vector<SpellCard*> getSpells();
+
+        void cleanHeand();
+        void addSpell(std::string name);
 };

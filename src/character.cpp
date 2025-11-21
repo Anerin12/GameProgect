@@ -26,7 +26,6 @@ void Character::move(Position newPosition)
 }
 void Character::setHealth(int health)
 {
-    if (health <= 100)
         health_ = health;
 }
 

@@ -2,6 +2,16 @@
 #include "spells/areaSpell.h"
 #include "spells/directSpell.h"
 
+std::vector<std::string> directNames = {"Огненный шар", "Малый разряд", "Большой разряд"};
+std::vector<std::string> directDescriptions = {"Поражает врага адским пламенем", "Поражает врага коротким зарядом", "Разряд, от которого жарится плоть"};
+std::vector<int> directDamage = {50, 30, 100};
+std::vector<int> directRadius = {5, 7, 4};
+
+std::vector<std::string> areaNames = {"Гололед", "Иссушающее пламя", "Чума"};
+std::vector<std::string> areaDescriptions = {"Попробуй устоять на ногах", "Никто не выживет", "Пора надеть маску"};
+std::vector<int> areaDamage = {30, 100, 70};
+std::vector<int> areaRadius = {7, 4, 9};
+
 Heand::Heand(int size) : size_(size)
 {
     generateRandomSpell();
@@ -29,12 +39,12 @@ void Heand::deliteSpell(int index)
     }
 }
 
-SpellCard *Heand::printHeand()
+void Heand::printHeand()
 {
     if (spells_.empty())
     {
         std::cout << "Заклинаний нет!" << std::endl;
-        return nullptr;
+        return;
     }
 
     int i = 1;
@@ -46,23 +56,11 @@ SpellCard *Heand::printHeand()
         std::cout << i++ << ". " << spell->getname() << std::endl;
     }
 
-    SpellCard *spell = chooseSpell();
-    return spell;
 }
 
 void Heand::generateRandomSpell()
 {
     if (size_ <= spells_.size()){return;}
-
-    std::vector<std::string> directNames = {"Огненный шар", "Малый разряд", "Большой разряд"};
-    std::vector<std::string> directDescriptions = {"Поражает врага адским пламенем", "Поражает врага коротким зарядом", "Разряд, от которого жарится плоть"};
-    std::vector<int> directDamage = {50, 30, 100};
-    std::vector<int> directRadius = {5, 7, 4};
-
-    std::vector<std::string> areaNames = {"Гололед", "Исшушающее пламя", "Чума"};
-    std::vector<std::string> areaDescriptions = {"Попробуй устоять на ногах", "Никто не выживет", "Пора надеть маску"};
-    std::vector<int> areaDamage = {30, 100, 70};
-    std::vector<int> areaRadius = {7, 4, 9};
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -130,3 +128,27 @@ void Heand::info(int sp){
 }
 
 std::vector<SpellCard*> Heand::getSpells(){return spells_;}
+
+void Heand::cleanHeand(){
+    spells_.clear();
+}
+
+void Heand::addSpell(std::string name){
+    for (int sp = 0; sp < areaNames.size(); sp++){
+        if (areaNames[sp] == name){
+            SpellCard* spell = new SpellCard(name, areaDescriptions[sp], areaDamage[sp], areaRadius[sp]);
+            spells_.push_back(spell);
+            return;
+        }
+    }
+
+    for (int sp = 0; sp < directNames.size(); sp++)
+    {
+        if (directNames[sp] == name)
+        {
+            SpellCard *spell = new SpellCard(name, directDescriptions[sp], directDamage[sp], directRadius[sp]);
+            spells_.push_back(spell);
+            return;
+        }
+    }
+}

@@ -68,7 +68,6 @@ void Field::generateField()
     std::vector<double> weights = {1.0, 1.0, 5.0};
     std::discrete_distribution<> d(weights.begin(), weights.end());
 
-    Character *null = nullptr;
     for (int y = 0; y < height_; y++)
     {
         std::vector<Cell> line;
@@ -237,4 +236,23 @@ void Field::addAlly(Position position)
 
 bool Field::isTrap(Position position){
     return field_[position.y][position.x].getType() == TRAP;
+}
+
+void Field::buildNewField(std::vector<std::vector<int>> newField){
+    height_ = newField[0].size();
+
+    field_.clear();
+
+    for (int y = 0; y < height_; y++){
+
+        std::vector<Cell> line;
+        for (int x = 0; x < height_; x++){
+
+            Type opts = static_cast<Type>(newField[y][x]);
+
+            line.push_back(Cell(opts, NOOCUP));
+        }
+        
+        field_.push_back(line);
+    }
 }

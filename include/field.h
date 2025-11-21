@@ -25,6 +25,8 @@ public:
     void addEnemyHut(Position position);
     void deliteCharacter(Position position);
 
+    void buildNewField(std::vector<std::vector<int>> newField);
+
     
     void print();
 

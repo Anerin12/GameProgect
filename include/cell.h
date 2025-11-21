@@ -35,6 +35,8 @@ public:
     // Constructor
     Cell(Type type, Ocupant ocup = NOOCUP);
 
+    int string();
+
     // getter
     Type getType();
     Ocupant getOcupant();
