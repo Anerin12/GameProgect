@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <memory>
 #include <algorithm>
 #include "character.h"
 #include "heand.h"

@@ -7,14 +7,11 @@ EnemyHut::EnemyHut(int health, Position position, int counter)
         this->move = moveCounter;
     }
 
-Enemy* EnemyHut::generateEnemy()
+std::unique_ptr<Enemy> EnemyHut::generateEnemy()
 {
     Position new_pos = this->getPosition();
     new_pos.y++;
-
-    Enemy *enemy = new Enemy(100, 10, new_pos);
-
-    return enemy;
+    return std::make_unique<Enemy>(100, 10, new_pos);
 }
 
 bool EnemyHut::update()

@@ -20,16 +20,15 @@ class Game
 private:
     std::unique_ptr<Player> player_;
     Field field_;
-    std::vector<Enemy*> enemies_;
-    std::vector<EnemyHut *> enemyHuts_;
+    std::vector<std::unique_ptr<Enemy>> enemies_;
+    std::vector<std::unique_ptr<EnemyHut>> enemyHuts_;
     bool isRuning_ = true;
     int level_;
 
 
     //lb2
-    std::vector<Tower *> towers_;
-    std::vector<Ally *> allies_;
-    
+    std::vector <std::unique_ptr<Tower >> towers_;
+    std::vector <std::unique_ptr<Ally>> allies_;
 
 public:
     Game();

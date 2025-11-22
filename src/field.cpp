@@ -176,6 +176,11 @@ bool Field::isSlow(Position position){
     int x = position.x;
     int y = position.y;
 
+    if (y < 0 || y >= height_)
+        return false;
+    if (x < 0 || x >= height_)
+        return false;
+
     return field_[y][x].getType() == SLOW;
 }
 

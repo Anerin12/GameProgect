@@ -17,7 +17,7 @@ class EnemyHut : public Character{
 
         //Active methods
         bool update();
-        Enemy* generateEnemy();
+        std::unique_ptr<Enemy> generateEnemy();
 
 
         // getters
