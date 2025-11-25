@@ -1,7 +1,7 @@
 #include "managment/enemyManager.h"
-#include "player.h"
-#include "field.h"
-#include "position.h"
+#include "characters/player.h"
+#include "field/field.h"
+#include "field/position.h"
 #include "configs/gameConf.h"
 #define FALL Position {-1, -1}
 

@@ -4,8 +4,8 @@
 #include "spells/callSpell.h"
 #include "spells/trapSpell.h"
 #include "spells/improveSpell.h"
-#include "field.h"
-#include "ally.h"
+#include "field/field.h"
+#include "characters/ally.h"
 
 class EnemyManager;
 

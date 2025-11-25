@@ -1,6 +1,6 @@
 #pragma once
 #include "IspellCard.h"
-#include "position.h"
+#include "field/position.h"
 
 struct Position;
 

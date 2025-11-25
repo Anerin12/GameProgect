@@ -1,5 +1,5 @@
 #include "spells/trapSpell.h"
-#include "position.h"
+#include "field/position.h"
 
 TrapSpell::TrapSpell(int damage, Position position): damage_(damage), position_(position) {}
 

@@ -1,4 +1,4 @@
-#include "hand.h"
+#include "spells/hand.h"
 #include "spells/areaSpell.h"
 #include "spells/directSpell.h"
 #include "spells/callSpell.h"

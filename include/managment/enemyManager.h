@@ -1,7 +1,7 @@
 #pragma once
-#include "enemy.h"
-#include "enemyHut.h"
-#include "tower.h"
+#include "characters/enemy.h"
+#include "characters/enemyHut.h"
+#include "characters/tower.h"
 #include "spellManager.h"
 #include <random>
 #include <algorithm>

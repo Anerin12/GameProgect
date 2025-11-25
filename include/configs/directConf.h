@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "position.h"
+#include "field/position.h"
 
 struct directConf{
     std::vector<std::string> directNames = {"Огненный шар", "Малый разряд", "Большой разряд"};

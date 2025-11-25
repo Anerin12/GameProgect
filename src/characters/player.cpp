@@ -1,8 +1,8 @@
-#include "player.h"
+#include "characters/player.h"
 #include <iostream> 
-#include "enemy.h"  
-#include "hand.h"   
-#include "position.h"
+#include "characters/enemy.h"  
+#include "spells/hand.h"   
+#include "field/position.h"
 
 #define STARTPOS Position {1, 1}
 

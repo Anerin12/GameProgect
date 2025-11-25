@@ -1,4 +1,4 @@
-#include "player.h"
+#include "characters/player.h"
 
 class Ally : public Player{
 

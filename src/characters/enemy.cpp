@@ -1,5 +1,5 @@
-#include "enemy.h"
-#include "player.h"
+#include "characters/enemy.h"
+#include "characters/player.h"
 
 Enemy::Enemy(int health, int damage, Position position): Character(health, damage, position){}
 

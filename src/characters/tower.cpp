@@ -1,5 +1,5 @@
-#include "tower.h"
-#include "position.h"
+#include "characters/tower.h"
+#include "field/position.h"
 
 
 Tower::Tower(int health, Position position): Character(health, 0, position){

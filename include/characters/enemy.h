@@ -1,5 +1,5 @@
 #pragma once
-#include "character.h"
+#include "characters/character.h"
 
 class Player;
 

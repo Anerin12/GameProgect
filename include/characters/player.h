@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>      
 #include <string>      
-#include "character.h" 
-#include "hand.h"      
+#include "characters/character.h" 
+#include "spells/hand.h"      
 class Enemy;           
 struct Position;
 

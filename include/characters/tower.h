@@ -1,5 +1,5 @@
 #include <memory>               
-#include "character.h"          
+#include "characters/character.h"          
 #include "spells/directSpell.h" 
 struct Position;
 

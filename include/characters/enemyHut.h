@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>      
-#include "character.h" 
-#include "enemy.h"     
+#include "characters/character.h" 
+#include "characters/enemy.h"     
 
 class EnemyHut : public Character{
     private:

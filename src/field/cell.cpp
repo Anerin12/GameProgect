@@ -1,4 +1,4 @@
-#include "cell.h"
+#include "field/cell.h"
 
 // Constructor
 Cell::Cell(Type type, Ocupant ocup)

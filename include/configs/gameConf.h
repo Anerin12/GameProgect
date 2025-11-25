@@ -1,4 +1,4 @@
-#include "position.h"
+#include "field/position.h"
 
 struct conf_t{
     int fieldSize = 10;
