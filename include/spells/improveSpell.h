@@ -1,14 +1,13 @@
 #pragma once
+#include <string> 
+#include "spells/IspellCard.h"
 
-class SpellCard;
-class TrapSpell;
-class CallSpell;
-
-class ImproveSpell{
+class ImproveSpell : public ISpellCard{
     public:
         ImproveSpell();
-
-        void use(SpellCard* spell);
-        void use(TrapSpell *spell);
-        void use(CallSpell *spell);
+        void use(ISpellCard& spell) override;
+        std::string name() const override;
+        void levelUp() override;
+        std::pair<int, int> use() override;
+        int getRadius() override;
 };

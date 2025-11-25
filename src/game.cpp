@@ -1,8 +1,6 @@
 #include "game.h"
 #define FALL Position {-1,-1}
 
-conf_t conf{10, 100, 15, 1, 100, 10, 1, 100, 1, 100, 10};
-Position startPos = {1, 1};
 
 Game::Game()
 {
@@ -19,22 +17,20 @@ Game::Game()
 
     case 'N':
         level_ = 0;
-        player_ = std::make_unique<Player>(conf.playerHealth, conf.playerDamage, startPos);
-        field_ = Field(conf.fieldSize);
+        player_ = std::make_unique<Player>(gameConf.playerHealth, gameConf.playerDamage, gameConf.playerStartPos);
+        field_ = Field(gameConf.fieldSize);
         field_.addPlayer(player_->getPosition());
-        generateEnemy(conf.numEnemy);
-        generateEnemyHut(conf.numEnemyHut);
-        generateTower(conf.numTower);
+        enemyManager_ = EnemyManager(field_);
+        spellManager_ = SpellManager();
         break;
 
     default:
         level_ = 0;
-        player_ = std::make_unique<Player>(conf.playerHealth, conf.playerDamage, startPos);
-        field_ = Field(conf.fieldSize);
+        player_ = std::make_unique<Player>(gameConf.playerHealth, gameConf.playerDamage, gameConf.playerStartPos);
+        field_ = Field(gameConf.fieldSize);
         field_.addPlayer(player_->getPosition());
-        generateEnemy(conf.numEnemy);
-        generateEnemyHut(conf.numEnemyHut);
-        generateTower(conf.numTower);
+        enemyManager_ = EnemyManager(field_);
+        spellManager_ = SpellManager();
         break;
     }
 
@@ -45,21 +41,23 @@ void Game::improvePlayer(){
     char opt;
     std::cout << "| Health H | Damage D | Spell S |" << std::endl;
     std::cin >> opt;
+    std::unique_ptr<ImproveSpell> spell;
     switch (opt)
     {
     case 'H':
-        conf.playerHealth += 20;
-        player_->setHealth(conf.playerHealth);
+        gameConf.playerHealth += 20;
+        player_->setHealth(gameConf.playerHealth);
         std::cout << "Health: " << player_->getHealth() << std::endl;
         break;
 
     case 'D':
-        conf.playerDamage += 10;
-        player_->setDamage(conf.playerDamage);
+        gameConf.playerDamage += 10;
+        player_->setDamage(gameConf.playerDamage);
         break;
 
     case 'S':
-        improveManager();
+        spell = std::make_unique<ImproveSpell>();
+        spellManager_.cast(*spell, field_, enemyManager_, player_->getHand());
         break;
 
     default:
@@ -67,38 +65,25 @@ void Game::improvePlayer(){
     }
 }
 
-void Game::improveEnemy(){
-    conf.enemyDamage+=5;
-    conf.enemyHutHealth+=10;
-    conf.towerHealth+=10;
-}
-
-void Game::clearCharacter(){
-    enemies_.clear();
-    enemyHuts_.clear();
-    towers_.clear();
-    allies_.clear();
-}
 
 void Game::newLevel(){
     this->improvePlayer();
-    this->improveEnemy();
+    enemyManager_.improveEnemies();
 
-    this->clearCharacter();
+    enemyManager_.cleanEnemies();
+    spellManager_.cleanAlly();
 
-    player_->move(startPos);
+    player_->move(gameConf.playerStartPos);
 
-    int spSize = player_->getHeand()->getSpells().size();
+    int spSize = player_->getHand()->size();
     for (int i = 0; i < spSize/2; i++){
-        player_->getHeand()->deliteSpell(i);
+        player_->getHand()->deliteSpell(i);
     }
 
-    field_ = (conf.fieldSize < 25)? Field(conf.fieldSize+=5) : Field(conf.fieldSize);
+    field_ = (gameConf.fieldSize < 25)? Field(gameConf.fieldSize+=5) : Field(gameConf.fieldSize);
     field_.addPlayer(player_->getPosition());
+    enemyManager_.generateEnemies(field_);
 
-    generateEnemy(conf.numEnemy+=2);
-    generateEnemyHut(conf.numEnemyHut+=2);
-    generateTower(conf.numTower+=2);
     level_++;
 }
 
@@ -112,62 +97,6 @@ void Game::gameOver()
     std::cout << std::string(50, '_') << std::endl;
 }
 
-void Game::generateEnemy(int numEnemy)
-{
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, field_.getHeight() - 1);
-
-    for (int i = 0; i < numEnemy; i++)
-    {
-        Position randPos = {dist(gen), dist(gen)};
-        while(!field_.isFree(randPos)){
-            randPos = {dist(gen), dist(gen)};
-        }
-
-        std::unique_ptr<Enemy> en = std::make_unique<Enemy>(conf.enemyHealth, conf.enemyDamage, randPos);
-        field_.addEnemy(randPos);
-        this->enemies_.push_back(std::move(en));
-    }
-}
-
-void Game::generateEnemyHut(int numEnemyHut)
-{
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, field_.getHeight() - 1);
-
-    for (int i = 0; i < numEnemyHut; i++)
-    {
-        Position randPos = {dist(gen), dist(gen)};
-        while (!field_.isFree(randPos))
-        {
-            randPos = {dist(gen), dist(gen)};
-        }
-
-        field_.addEnemyHut(randPos);
-        this->enemyHuts_.push_back(std::make_unique<EnemyHut>(conf.enemyHutHealth, randPos));
-    }
-}
-
-void Game::generateTower(int numTower){
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, field_.getHeight() - 1);
-
-    for (int i = 0; i < numTower; i++)
-    {
-        Position randPos = {dist(gen), dist(gen)};
-        while (!field_.isFree(randPos))
-        {
-            randPos = {dist(gen), dist(gen)};
-        }
-
-        std::unique_ptr<Tower> tower = std::make_unique<Tower>(conf.towerHealth, randPos);
-        field_.addTower(randPos);
-        this->towers_.push_back(std::move(tower));
-    }
-}
 
 void Game::gameLoop()
 {
@@ -188,8 +117,8 @@ void Game::gameLoop()
         std::cin >> opts;
 
         int attackRadius = (player_->getWeapon() == "knight")? 1 : 4;
-        Position enemyPos = {-1, -1};
-
+        Position enemyPos = {-1,-1};
+        std::unique_ptr<ISpellCard> spell;
         Position newPos = player_->getPosition();
 
         switch (opts)
@@ -212,21 +141,18 @@ void Game::gameLoop()
         case 'F':
         {
             enemyPos = field_.enemyInRadius(player_->getPosition(), attackRadius);
-            auto it = std::find_if(enemies_.begin(), enemies_.end(), [&](auto& en){return en->getPosition() == enemyPos;});
-            if (it != enemies_.end())
-                player_->attack(**it);
-
+            enemyManager_.setDamage(enemyPos, player_->getDamage());
             break;
         }
         case 'E':
             player_->changeWeapon();
             break;
         case 'R':
-            spellManager();
-            break;
+            player_->getHand()->printHand();
+            spell = player_->getHand()->chooseSpell();
+            if (spell != nullptr)
+                spellManager_.cast(*spell, field_, enemyManager_, player_->getHand());
 
-        case 'X':
-            callSpellManager();
             break;
 
         case 'M':
@@ -235,11 +161,6 @@ void Game::gameLoop()
 
         case 'L':
             loadGame();
-            break;
-
-        case 'G':
-            player_->useTrap();
-            field_.addTrap(player_->getPosition());
             break;
 
         default:
@@ -260,263 +181,38 @@ void Game::gameLoop()
             player_->setIsSlow(!player_->thisIsSlow());
         }
 
-        enemiesManager();
-        enemyHutsManager();
-        towerManager();
-
-        if(!allies_.empty()){
-            allyManager();
-        }
-
-        if(enemies_.empty() && enemyHuts_.empty()){
+        if(enemyManager_.enemyEmpty()){
             this->newLevel();
         }
 
+        enemyManager_.enemyMove(*player_, field_, spellManager_);
+        enemyManager_.enemyHutsMove(*player_, field_);
+        enemyManager_.towerMove(*player_, field_);
+        spellManager_.allyMove(field_, enemyManager_);
     }
 }
 
-void Game::enemiesManager(){
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(-1, 1);
-
-    enemies_.erase(
-        std::remove_if(enemies_.begin(), enemies_.end(),
-                       [&](const auto &en)
-                       {
-                           if (!en)
-                               return true;
-                           if (!en->isAlive())
-                           {
-                               field_.deliteCharacter(en->getPosition());
-
-                               if (player_->getHealth() < conf.playerHealth)
-                               {
-                                   player_->setHealth(player_->getHealth() + 10);
-                               }
-                               player_->scoreUp();
-                               if ((player_->getScore() / 10) % 2 == 0)
-                               {
-                                   player_->getHeand()->generateRandomSpell();
-                               }
-                               if (player_->getScore() == 100)
-                               {
-                                   player_->levelUp();
-                               }
-
-                               return true; 
-                           }
-                           return false;
-                       }),
-        enemies_.end());
-
-    for (auto& en : enemies_){
-
-        if(!en) continue;
-
-        if (field_.isTrap(en->getPosition())){
-            en->takeDamage(player_->getTrapDamage());
-            field_.deliteTrap(en->getPosition());
-            player_->deliteTrap(en->getPosition());
-        }
-
-        Position playerPos = field_.playerInZone(en->getPosition(), 1);
-
-        if(playerPos != FALL){
-            en->attack(*player_);
-        }
-        else{
-            Position newPos = en->getPosition();
-            newPos.x+=dist(gen);
-            newPos.y+=dist(gen);
-
-            if(field_.isFree(newPos)){
-                field_.deliteCharacter(en->getPosition());
-                field_.addEnemy(newPos);
-                en->move(newPos);
-            }
-        }
-    }
-}
-
-void Game::enemyHutsManager(){
-
-    enemyHuts_.erase(
-        std::remove_if(enemyHuts_.begin(), enemyHuts_.end(),
-                       [&](const auto &enH)
-                       {
-                           if (!enH)
-                               return true;
-                           if (!enH->isAlive())
-                           {
-                               field_.deliteCharacter(enH->getPosition());
-
-                               if (player_->getHealth() < conf.playerHealth)
-                               {
-                                   player_->setHealth(player_->getHealth() + 10);
-                               }
-                               player_->scoreUp();
-                               if ((player_->getScore() / 10) % 2 == 0)
-                               {
-                                   player_->getHeand()->generateRandomSpell();
-                               }
-                               if (player_->getScore() == 100)
-                               {
-                                   player_->levelUp();
-                               }
-                               return true;
-                           }
-                           return false;
-                       }),
-                    enemyHuts_.end());
-
-    for(auto& enH : enemyHuts_){
-
-        if (!enH) continue;
-
-        if(enH->update()){
-            enemies_.push_back(std::move(enH->generateEnemy()));
-        }
-    }
-}
 
 
 void Game::printSettings() {
     std::cout << "GameLevel: " << level_ << std::endl;
     std::cout << std::string(60, '_') << std::endl;
     std::cout << "| Move: W/S/A/D | Change weapon: E | Attack: F | Quit: Q |" << std::endl;
-    std::cout << "| Open Heand R | Cast trap G | Call spell X | Improve spell I |" << std::endl;
+    std::cout << "| Open Hand R | Cast trap G | Call spell X | Improve spell I |" << std::endl;
     std::cout << "| Save game M | Load game L |" << std::endl;
     std::cout << std::string(60, '_') << std::endl;
 }
 
-void Game::spellManager(){
-    player_->getHeand()->printHeand();
-    SpellCard *spell = player_->getHeand()->chooseSpell();
-    if(spell){
-        auto spellInf = spell->use(field_, player_->getPosition());
-        std::vector<Position> inRad = spellInf.first;
-        int damage = spellInf.second;
-
-        for (Position pos : inRad){
-            auto itEn = std::find_if(enemies_.begin(), enemies_.end(), [&](auto& en){return en->getPosition() == pos;});
-            auto itEnH = std::find_if(enemyHuts_.begin(), enemyHuts_.end(), [&](auto &enH){ return enH->getPosition() == pos ;});
-
-            if (itEn != enemies_.end())
-                (*itEn)->takeDamage(spell->getDamage());
-            else if (itEnH != enemyHuts_.end())
-                (*itEnH)->takeDamage(spell->getDamage());
-        }
-    }
-}
 
 
-void Game::towerManager(){
-
-    for (auto& tw : towers_){
-        if(field_.playerInZone(tw->getPosition(), tw->attack()->getRadius()) != FALL){
-            auto damage = tw->attack()->getDamage();
-            player_->takeDamage(damage);
-
-        }
-    }
-}
-
-
-void Game::callSpellManager(){
-    CallSpell *newSpell = player_->getCallSpell();
-    auto spell = newSpell->use(field_, player_->getPosition());
-    Position allyPos = spell.first[0];
-
-   for (int num = 0; num < newSpell->getNumAlly(); num++){
-        std::unique_ptr<Ally> al = std::make_unique<Ally>(100, 20, allyPos);
-        allies_.push_back(std::move(al));
-    }
-}
-
-void Game::allyManager(){
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(-1, 1);
-
-    int index = 0;
-    for (auto& al : allies_)
-    {
-
-        if (!al->isAlive())
-        {
-            field_.deliteCharacter(al->getPosition());
-            allies_.erase(allies_.begin() + index);
-            continue;
-        }
-
-        Position enemyPos = field_.enemyInRadius(al->getPosition(), 1);
-
-        if (enemyPos != FALL)
-        {
-            auto it = std::find_if(enemies_.begin(), enemies_.end(), [&](auto& en){return en->getPosition() == enemyPos;});
-            if (it != enemies_.end())
-                (*it)->takeDamage(al->getDamage());
-        }
-        else
-        {
-            Position newPos = al->getPosition();
-            newPos.x += dist(gen);
-            newPos.y += dist(gen);
-
-            if (field_.isFree(newPos))
-            {
-                field_.deliteCharacter(al->getPosition());
-                field_.addAlly(newPos);
-                al->move(newPos);
-            }
-        }
-        index++;
-    }
-}
-
-void Game::improveManager(){
-    
-    ImproveSpell improve;
-    char opt;
-    int n;
-    std::cout << std::string(60, '_') << std::endl;
-    std::cout << "Choose improve: " << std::endl;
-    std::cout << "| Call spell Z | Trap spell X | Spell in heand C |" << std::endl;
-    const std::vector<std::unique_ptr<TrapSpell>> &traps = player_->getTraps();
-    std::vector<SpellCard*> spells;
-    std::cin >>opt;
-
-    switch (opt)
-    {
-    case 'Z':
-        std::cout << "Улучшаю заклинание призыва..." << std::endl;
-        improve.use(player_->getCallSpell());
-        break;
-    case 'X':
-        std::cout << "Улучшаю заклинание ловушки..." << std::endl;
-        for (auto& trap : traps){
-            improve.use(trap.get());
-        }
-        player_->setTrapDamage(player_->getTrapDamage() + 10);
-        break;
-
-    case 'C':
-        spells = player_->getHeand()->getSpells();
-        player_->getHeand()->printHeand();
-        std::cin >> n;
-        std::cout << "Улучшаю заклинание " << spells[n-1]->getname() << "... " << std::endl;
-        improve.use(spells[n-1]);
-
-    default:
-        break;
-    }
-
-}
 
 
 void Game::saveGame(){
+
+    const auto& allies_ = spellManager_.getAlly();
+    const auto& enemies_ = enemyManager_.getEnemy();
+    const auto& enemyHuts_ = enemyManager_.getEnemyHut();
+    const auto& towers_ = enemyManager_.getTowers();
 
     std::string filename;
     std::cout << "Input save name: " << std::endl;
@@ -531,10 +227,10 @@ void Game::saveGame(){
         std::string player = std::format("Player {} {} {} {} {} {} {}", player_->getHealth(), player_->getDamage(), player_->getPosition().x, player_->getPosition().y, player_->getWeapon(), player_->getLevel(), player_->getScore());
         out << player << std::endl;
 
-        auto spells = player_->getHeand()->getSpells();
+        const auto& spells = player_->getHand()->getSpells();
 
-        for (auto sp : spells){
-            std::string spell = std::format("Spell {}", sp->getname());
+        for (auto& sp : spells){
+            std::string spell = std::format("Spell {}", sp->name());
             out << spell << std::endl;
         }
 
@@ -614,10 +310,8 @@ void Game::loadGame(){
         return;
     }
 
-    enemies_.clear();
-    towers_.clear();
-    allies_.clear();
-    enemyHuts_.clear();
+    enemyManager_.cleanEnemies();
+    spellManager_.cleanAlly();
 
     std::vector<std::vector<int>> loadField;
 
@@ -663,25 +357,25 @@ void Game::loadGame(){
             level_ = lvl;
         }
 
-        else if (type == "Enemy")
+        else if (type == "Enemy") 
         {
             in >> hl >> dm >> pos.x >> pos.y;
-            enemies_.push_back(std::make_unique<Enemy>(hl, dm, pos));
+            enemyManager_.addEnemy(std::make_unique<Enemy>(hl, dm, pos));
         }
         else if (type == "EnemyHut")
         {
             in >> hl >> pos.x >> pos.y;
-            enemyHuts_.push_back(std::make_unique<EnemyHut>(hl, pos));
+            enemyManager_.addEnemyHut(std::make_unique<EnemyHut>(hl, pos));
         }
         else if (type == "Tower")
         {
             in >> hl >> pos.x >> pos.y;
-            towers_.push_back(std::make_unique<Tower>(hl, pos));
+            enemyManager_.addTower(std::make_unique<Tower>(hl, pos));
         }
         else if (type == "Ally")
         {
             in >> hl >> dm >> pos.x >> pos.y;
-            allies_.push_back(std::make_unique<Ally>(hl, dm, pos));
+            spellManager_.addAlly(std::make_unique<Ally>(hl, dm, pos));
         }
     }
 
@@ -693,10 +387,15 @@ void Game::loadGame(){
 
     field_.buildNewField(loadField);
 
-    player_->getHeand()->cleanHeand();
+    player_->getHand()->cleanHand();
+
+    const auto& allies_ = spellManager_.getAlly();
+    const auto& enemies_ = enemyManager_.getEnemy();
+    const auto& enemyHuts_ = enemyManager_.getEnemyHut();
+    const auto& towers_ = enemyManager_.getTowers();
 
     for (auto sp : spells){
-        player_->getHeand()->addSpell(sp);
+        player_->getHand()->addSpell(sp);
     }
 
     field_.addPlayer(player_->getPosition());

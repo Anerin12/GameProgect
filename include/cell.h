@@ -1,5 +1,4 @@
 #pragma once
-#include "character.h"
 
 enum Type
 {
@@ -20,7 +19,6 @@ enum Ocupant
     ALLY
 };
 
-class Character;
 
 class Cell
 {

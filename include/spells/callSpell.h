@@ -1,13 +1,20 @@
-#include "spellCard.h"
+#pragma once
+#include <string>  
+#include <utility> 
+#include "IspellCard.h"
 
-class CallSpell : public SpellCard{
+class CallSpell : public ISpellCard{
     private:
-        int numAlly_;
+        int level_;
+        int radius_;
+
     public: 
-        CallSpell(int numAlly);
+        CallSpell();
 
-        std::pair <std::vector<Position>, int> use(Field &field, Position playerPos) override;
+        std::pair <int, int> use() override;
+        void use(ISpellCard &spell) override;
 
-        int getNumAlly();
-        void setNumAlly(int numAlly);
+        std::string name() const override;
+        void levelUp() override;
+        int getRadius() override;
 };

@@ -1,24 +1,19 @@
 #pragma once
-#include <string>
-#include <algorithm>
-#include "character.h"
-#include "heand.h"
-#include "spells/trapSpell.h"
-#include "spells/callSpell.h"
-
-class Enemy;
+#include <memory>      
+#include <string>      
+#include "character.h" 
+#include "hand.h"      
+class Enemy;           
+struct Position;
 
 class Player : public Character{
     private:
         int level_;
         int score_;
         std::string weapon_;
-        int trapDamage_;
 
         //lb2
-        std::unique_ptr<Heand> heand_;
-        std::vector<std::unique_ptr<TrapSpell>> traps_;
-        std::unique_ptr<CallSpell> callSpell_;
+        std::unique_ptr<Hand> hand_;
 
     public:
         // Constructor/Destructor
@@ -40,15 +35,9 @@ class Player : public Character{
         std::string getWeapon() const;
 
         //lb2
-        Heand* getHeand();
+        Hand* getHand();
         void useTrap();
         void deliteTrap(Position position);
-        const std::vector<std::unique_ptr<TrapSpell>>& getTraps() const;
-        int getTrapDamage();
-        void setTrapDamage(int TrapDamage);
-
-        CallSpell* getCallSpell();
-
 
         void setWeapon(std::string weapon);
         void setLevel(int lvl);

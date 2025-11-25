@@ -1,5 +1,4 @@
 #include "cell.h"
-#include "character.h"
 
 // Constructor
 Cell::Cell(Type type, Ocupant ocup)
@@ -18,6 +17,8 @@ int Cell::string(){
     else if (typeCell == WALL) return 1;
     else if (typeCell == SPACE) return 2;
     else if (typeCell == TRAP) return 3;
+
+    return -1;
 }
 
 //spells

@@ -1,6 +1,5 @@
 #include "enemyHut.h"
-#include "field.h"
-#include "enemy.h"
+#include "enemy.h" 
 
 EnemyHut::EnemyHut(int health, Position position, int counter)
     : Character(health, 0, position), moveCounter(counter) {

@@ -1,9 +1,7 @@
 #pragma once
-
-#include "character.h"
-#include "enemy.h"
-
-class Enemy;
+#include <memory>      
+#include "character.h" 
+#include "enemy.h"     
 
 class EnemyHut : public Character{
     private:

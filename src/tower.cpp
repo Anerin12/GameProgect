@@ -1,9 +1,11 @@
 #include "tower.h"
+#include "position.h"
+
 
 Tower::Tower(int health, Position position): Character(health, 0, position){
-    spell_ = new DirectSpell("Огненный шар", "", 10, 2);
+    spell_ = std::make_unique<DirectSpell>("Огненный шар", "", 10, 2);
 }
 
 DirectSpell* Tower::attack(){
-    return spell_;
+    return spell_.get();
 }

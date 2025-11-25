@@ -1,11 +1,11 @@
-#include "character.h"
-#include "spells/directSpell.h"
-
-class Player;
+#include <memory>               
+#include "character.h"          
+#include "spells/directSpell.h" 
+struct Position;
 
 class Tower : public Character {
     private:
-        DirectSpell *spell_;
+        std::unique_ptr<DirectSpell> spell_;
 
     public:
         Tower(int health, Position position);

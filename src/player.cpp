@@ -1,20 +1,20 @@
 #include "player.h"
-#include "heand.h"
-#include "enemy.h"
+#include <iostream> 
+#include "enemy.h"  
+#include "hand.h"   
+#include "position.h"
 
 #define STARTPOS Position {1, 1}
 
 
 // Constructor/Destructor
-Player::Player(int health, int damage, Position position):Character(health, damage, position), level_(1), score_(0), weapon_("knight"), trapDamage_(100){
-    heand_ = std::make_unique<Heand>(10);
-    callSpell_ = std::make_unique<CallSpell>(1);
+Player::Player(int health, int damage, Position position):Character(health, damage, position), level_(1), score_(0), weapon_("knight"){
+    hand_ = std::make_unique<Hand>(10);
 }
 
-Player::Player() : Character(100, 20, STARTPOS), level_(1), score_(0), weapon_("knight"), trapDamage_(100)
+Player::Player() : Character(100, 20, STARTPOS), level_(1), score_(0), weapon_("knight")
 {
-    heand_ = std::make_unique<Heand>(10);
-    callSpell_ = std::make_unique<CallSpell>(1);
+    hand_ = std::make_unique<Hand>(10);
 }
 
 // Active methods
@@ -50,25 +50,6 @@ void Player::printStatus(){
 }
 
 
-void Player::useTrap(){
-    traps_.push_back(std::make_unique<TrapSpell>(trapDamage_, this->getPosition()));
-}
-
-void Player::deliteTrap(Position position){
-    int index = 0;
-
-    auto it = std::find_if(traps_.begin(), traps_.end(), [&](auto& trap){return trap->getPosition() == position;});
-
-    if (it != traps_.end())
-    {
-        traps_.erase(it);
-    }
-}
-
-void Player::setTrapDamage(int TrapDamage){
-    trapDamage_ = TrapDamage;
-}
-
 void Player::setWeapon(std::string weapon){this->weapon_ = weapon;}
 void Player::setLevel(int lvl){this->level_ = lvl;}
 void Player::setScore(int score){this->score_ = score;}
@@ -77,7 +58,4 @@ void Player::setScore(int score){this->score_ = score;}
 int Player::getLevel() const {return level_;}
 int Player::getScore() const {return score_;}
 std::string Player::getWeapon() const {return weapon_;}
-Heand* Player::getHeand(){return heand_.get();}
-CallSpell* Player::getCallSpell(){return callSpell_.get();}
-int Player::getTrapDamage(){return trapDamage_;}
-const std::vector<std::unique_ptr<TrapSpell>>& Player::getTraps() const {return traps_;}
+Hand* Player::getHand(){return hand_.get();}

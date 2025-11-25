@@ -1,5 +1,4 @@
 #include "character.h"
-#include "field.h"
 
 Character::Character(int health, int damage, Position position)
     : health_(health), damage_(damage), position_(position), isSlow(false) {}

@@ -1,6 +1,7 @@
 #pragma once
-#include "cell.h"
-#include <vector>
+#include <vector> 
+#include "cell.h" 
+#include "position.h"
 
 class Field
 {
@@ -35,6 +36,7 @@ public:
     bool isSlow(Position position);
     Position playerInZone(Position position, int radius);
     Position enemyInRadius(Position position, int radius);
+    std::vector<Position> enHInRadius(Position position, int radius);
 
     std::vector<std::vector<Cell>> &getField();
     int getHeight();
@@ -45,4 +47,10 @@ public:
     bool isTrap(Position position);
     void addTower(Position position);
     void addAlly(Position position);
+
+
+    void setZeroUsed();
+
+    Position chooseRegion(int radius);
+    Position getPlayer();
     };

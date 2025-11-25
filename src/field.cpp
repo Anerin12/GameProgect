@@ -1,5 +1,9 @@
 #include "field.h"
-#include <random>
+#include <stddef.h> 
+#include <iostream> 
+#include <random>   
+#include <string>   
+#include <utility>
 
 Field::Field(int height) : height_(height) { generateField(); }
 Field::Field() : height_(10) { generateField(); }
@@ -221,6 +225,44 @@ Position Field::enemyInRadius(Position position, int radius){
     return {-1, -1};
 }
 
+std::vector<Position> Field::enHInRadius(Position position, int radius)
+{
+    int dx = position.x;
+    int dy = position.y;
+
+    std::vector<Position> result;
+
+    for (int x = dx - radius; x < dx + radius; x++)
+    {
+        for (int y = dy - radius; y < dy + radius; y++)
+        {
+            if (x < 0 || x >= height_ || y < 0 || y >= height_)
+                continue;
+            Ocupant oc = field_[y][x].getOcupant();
+            if (oc == ENEMY || oc == ENEMYHUT)
+            {
+                result.push_back({x,y});
+            }
+        }
+    }
+
+    return result;
+}
+
+Position Field::getPlayer(){
+
+     for (int y = 0; y < field_.size(); y++)
+    {
+        for (int x = 0; x < field_.size(); x++)
+        {
+            if(field_[y][x].getOcupant() == PLAYER){
+                return {x, y};
+            }
+        }
+    } 
+    return {-1, -1};
+}
+
 void Field::addTrap(Position position){
     field_[position.y][position.x].setType(TRAP);
 }
@@ -260,4 +302,67 @@ void Field::buildNewField(std::vector<std::vector<int>> newField){
         
         field_.push_back(line);
     }
+}
+
+void Field::setZeroUsed()
+{
+    for (auto& y : field_)
+    {
+        for (auto& x : y)
+        {
+            x.setReadyToUse(false);
+        }
+    }
+}
+
+
+Position Field::chooseRegion(int radius){
+    Position zero = {0, 0};
+    bool flag = true;
+
+    while (flag){
+        for (int y = zero.y-radius; y < zero.y+radius; y++){
+            for (int x = zero.x-radius; x < zero.x+radius; x++){
+                if((y < 0 || y >= height_) || (x < 0 || x >= height_)){
+                    continue;
+                }
+
+                field_[y][x].setReadyToUse(true);
+            }
+        }
+        this->print();
+
+        char opt;
+        std::cin >> opt;
+
+        switch (opt)
+        {
+        case 'W':
+            zero.y--;
+            break;
+
+        case 'A':
+            zero.x--;
+            break;
+
+        case 'S':
+            zero.y++;
+            break;
+
+        case 'D':
+            zero.x++;
+            break;
+
+        case 'F':
+            this->setZeroUsed();
+            return zero;
+
+        default:
+            break;
+        }
+
+        this->setZeroUsed();
+    }
+
+    return {-1, -1};
 }
