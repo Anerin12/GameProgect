@@ -66,6 +66,39 @@ Field &Field::operator=(Field &&other)  noexcept
     return move(std::move(other)); 
 }
 
+void Field::print()
+{
+    for (auto &y : field_)
+    {
+        std::string line;
+        for (auto &x : y)
+        {
+            if ((x.getOcupant() == PLAYER))
+                line += "P ";
+            else if (x.getOcupant() == ENEMY)
+                line += "E ";
+            else if (x.getOcupant() == ENEMYHUT)
+                line += "H ";
+            else if (x.getOcupant() == TOWER)
+                line += "T ";
+            else if (x.getOcupant() == ALLY)
+                line += "A ";
+            else if (x.getReady())
+                line += "R ";
+            else if (x.getType() == TRAP)
+                line += "^ ";
+            else if (x.getType() == SLOW)
+                line += "~ ";
+            else if (x.getType() == WALL)
+                line += "# ";
+            else
+                line += ". ";
+        }
+        std::cout << line << std::endl;
+    }
+    std::cout << std::string(50, '_') << std::endl;
+}
+
 void Field::generateField()
 {    std::random_device rd;
     std::mt19937 gen(rd());
@@ -122,40 +155,6 @@ void Field::deliteCharacter(Position position)
 {
     auto pos = position;
     field_[pos.y][pos.x].setOcupant(NOOCUP);
-}
-
-
-void Field::print()
-{
-    for (auto &y : field_)
-    {
-        std::string line;
-        for (auto &x : y)
-        {
-            if ((x.getOcupant() == PLAYER))
-                line += "P ";
-            else if (x.getOcupant() == ENEMY)
-                line += "E ";
-            else if (x.getOcupant() == ENEMYHUT)
-                line += "H ";
-            else if (x.getOcupant() == TOWER)
-                line += "T ";
-            else if (x.getOcupant() == ALLY)
-                line += "A ";
-            else if (x.getReady())
-                line += "R ";
-            else if (x.getType()== TRAP)
-                line += "^ ";
-            else if (x.getType() == SLOW)
-                line += "~ ";
-            else if (x.getType() == WALL)
-                line += "# ";
-            else
-                line += ". ";
-        }
-        std::cout << line << std::endl;
-    }
-    std::cout << std::string(50, '_') << std::endl;
 }
 
 

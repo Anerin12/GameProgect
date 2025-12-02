@@ -44,15 +44,15 @@ void SpellManager::cast(DirectSpell &spell, Field &field, EnemyManager &enM, Han
         std::cout << "Враги не найдены" << std::endl;
         return;
     }
-
+    int i = 1;
     for (auto en : enemy){
-        std::cout << "Enemy: " << "(" << en.x << ", " << en.y << ")" << std::endl;
+        std::cout << i++ << '.' << " Enemy: " << "(" << en.x << ", " << en.y << ")" << std::endl;
     }
 
     int num;
     std::cin >> num;
 
-    if(num > enemy.size()-1){
+    if(num > enemy.size()){
         std::cout << "Некорректный ввод" << std::endl;
         return;
     }

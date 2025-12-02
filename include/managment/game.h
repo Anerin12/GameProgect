@@ -7,11 +7,8 @@
 #include <vector>
 #include <random>
 #include <iostream>
-#include "enemyManager.h"
-#include "spellManager.h"
-#include <fstream>
-#include <format>
-#include <filesystem>
+#include "saveLoadManager.h"
+
 
 class Game
 {
@@ -23,6 +20,7 @@ private:
     EnemyManager enemyManager_;
     SpellManager spellManager_;
     conf_t gameConf;
+    SaveLoadManager saveManager_;
 
 public:
     Game();
@@ -34,8 +32,4 @@ public:
     //lb3
     void newLevel();
     void improvePlayer();
-    void improveEnemy();
-    void clearCharacter();
-    void saveGame();
-    void loadGame();
 };
