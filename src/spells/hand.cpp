@@ -28,24 +28,6 @@ void Hand::deliteSpell(int index)
     }
 }
 
-void Hand::printHand()
-{
-    if (spells_.empty())
-    {
-        std::cout << "Заклинаний нет!" << std::endl;
-        return;
-    }
-
-    int i = 1;
-    std::cout << "Заклинания: " << std::endl;
-    std::cout << "0. Отмена " << std::endl;
-
-    for (auto& spell : spells_)
-    {
-        std::cout << i++ << ". " << spell->name() << std::endl;
-    }
-
-}
 
 void Hand::generateRandomSpell()
 {
@@ -163,4 +145,23 @@ void Hand::addSpell(std::string name){
 
 const std::vector<std::unique_ptr<ISpellCard>>& Hand::getSpells() const{
     return spells_;
+}
+
+
+ISpellCard *Hand::peekSpell(int index)
+{
+    if (index < 1 || index > static_cast<int>(spells_.size()))  
+        return nullptr;
+
+    ISpellCard* spell = spells_[index - 1].get();  
+    return spell;
+}
+
+std::unique_ptr<ISpellCard> Hand::takeSpell(int index)
+{
+    if (index < 1 || index > static_cast<int>(spells_.size())) 
+        return nullptr;
+    auto ptr = std::move(spells_[index - 1]); 
+    spells_.erase(spells_.begin() + (index - 1));
+    return ptr;
 }

@@ -38,13 +38,16 @@ public:
     // getter
     Type getType();
     Ocupant getOcupant();
+    Type getType() const;
+    Ocupant getOcupant() const;
 
     // setters
     void setType(Type type);
     void setOcupant(Ocupant ocupant);
-
+    
 
     //spells
     void setReadyToUse(bool rtu);
     bool getReady();
+    bool getReady() const;
 };

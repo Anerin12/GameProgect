@@ -19,8 +19,8 @@ public:
     bool isAlive();
     bool thisIsSlow();
 
-    int getDamage();
-    int getHealth();
+    int getDamage() const;
+    int getHealth() const;
     Position getPosition();
 
     void move(Position newPosition);

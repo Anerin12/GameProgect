@@ -6,7 +6,15 @@ Cell::Cell(Type type, Ocupant ocup)
 
 // getter
 Type Cell::getType() { return typeCell; }
+Type Cell::getType() const
+{
+    return typeCell;
+}
 Ocupant Cell::getOcupant() { return cellOcupant; }
+Ocupant Cell::getOcupant() const
+{
+    return cellOcupant;
+}
 
 // setters
 void Cell::setType(Type type) { typeCell = type; }
@@ -24,4 +32,4 @@ int Cell::string(){
 //spells
 void Cell::setReadyToUse(bool rtu){this->readyToUse = rtu;}
 bool Cell::getReady(){return readyToUse;}
-
+bool Cell::getReady() const { return readyToUse; }

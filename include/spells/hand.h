@@ -27,4 +27,7 @@ private:
         void cleanHand();
 
         const std::vector<std::unique_ptr<ISpellCard>>& getSpells() const;
+        
+        std::unique_ptr<ISpellCard> takeSpell(int index); // снимает и возвращает spell
+        ISpellCard *peekSpell(int index);                 // возвращает raw pointer, не снимая
 };

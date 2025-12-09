@@ -1,0 +1,14 @@
+{
+  "keymap": {
+    "W": "MoveUp",
+    "S": "MoveDown",
+    "A": "MoveLeft",
+    "D": "MoveRight",
+    "F": "Attack",
+    "E": "ChangeWeapon",
+    "R": "OpenHand",
+    "Q": "Quit",
+    "M": "Save",
+    "L": "Load"
+  }
+}

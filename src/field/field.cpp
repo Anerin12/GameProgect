@@ -66,38 +66,6 @@ Field &Field::operator=(Field &&other)  noexcept
     return move(std::move(other)); 
 }
 
-void Field::print()
-{
-    for (auto &y : field_)
-    {
-        std::string line;
-        for (auto &x : y)
-        {
-            if ((x.getOcupant() == PLAYER))
-                line += "P ";
-            else if (x.getOcupant() == ENEMY)
-                line += "E ";
-            else if (x.getOcupant() == ENEMYHUT)
-                line += "H ";
-            else if (x.getOcupant() == TOWER)
-                line += "T ";
-            else if (x.getOcupant() == ALLY)
-                line += "A ";
-            else if (x.getReady())
-                line += "R ";
-            else if (x.getType() == TRAP)
-                line += "^ ";
-            else if (x.getType() == SLOW)
-                line += "~ ";
-            else if (x.getType() == WALL)
-                line += "# ";
-            else
-                line += ". ";
-        }
-        std::cout << line << std::endl;
-    }
-    std::cout << std::string(50, '_') << std::endl;
-}
 
 void Field::generateField()
 {    std::random_device rd;
@@ -110,10 +78,16 @@ void Field::generateField()
         std::vector<Cell> line;
         for (int x = 0; x < height_; x++)
         {
-            Type opts = static_cast<Type>(d(gen));
+            if (x == 1 && y == 1){
+                line.push_back(Cell(SPACE, NOOCUP));
+            }
+            else{
+                Type opts = static_cast<Type>(d(gen));
 
-            line.push_back(Cell(opts, NOOCUP));
+                line.push_back(Cell(opts, NOOCUP));
+            }
         }
+
         field_.push_back(line);
     }
 }
@@ -158,7 +132,7 @@ void Field::deliteCharacter(Position position)
 }
 
 
-std::vector<std::vector<Cell>> &Field::getField() { return field_; }
+const std::vector<std::vector<Cell>> &Field::getField() const { return field_; }
 int Field::getHeight() { return height_; }
 
 bool Field::isFree(Position position)
@@ -303,65 +277,22 @@ void Field::buildNewField(std::vector<std::vector<int>> newField){
     }
 }
 
-void Field::setZeroUsed()
+void Field::markRegion(Position center, int radius, bool value)
 {
-    for (auto& y : field_)
+    for (int y = center.y - radius; y <= center.y + radius; ++y)
     {
-        for (auto& x : y)
+        for (int x = center.x - radius; x <= center.x + radius; ++x)
         {
-            x.setReadyToUse(false);
+            if (y < 0 || y >= height_ || x < 0 || x >= height_)
+                continue;
+            field_[y][x].setReadyToUse(value);
         }
     }
 }
 
-
-Position Field::chooseRegion(int radius){
-    Position zero = {0, 0};
-    bool flag = true;
-
-    while (flag){
-        for (int y = zero.y-radius; y < zero.y+radius; y++){
-            for (int x = zero.x-radius; x < zero.x+radius; x++){
-                if((y < 0 || y >= height_) || (x < 0 || x >= height_)){
-                    continue;
-                }
-
-                field_[y][x].setReadyToUse(true);
-            }
-        }
-        this->print();
-
-        char opt;
-        std::cin >> opt;
-
-        switch (opt)
-        {
-        case 'W':
-            zero.y--;
-            break;
-
-        case 'A':
-            zero.x--;
-            break;
-
-        case 'S':
-            zero.y++;
-            break;
-
-        case 'D':
-            zero.x++;
-            break;
-
-        case 'F':
-            this->setZeroUsed();
-            return zero;
-
-        default:
-            break;
-        }
-
-        this->setZeroUsed();
-    }
-
-    return {-1, -1};
+void Field::clearReady()
+{
+    for (auto &row : field_)
+        for (auto &cell : row)
+            cell.setReadyToUse(false);
 }

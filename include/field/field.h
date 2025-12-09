@@ -38,7 +38,7 @@ public:
     Position enemyInRadius(Position position, int radius);
     std::vector<Position> enHInRadius(Position position, int radius);
 
-    std::vector<std::vector<Cell>> &getField();
+    const std::vector<std::vector<Cell>> &getField () const;
     int getHeight();
 
     // lb2
@@ -51,6 +51,8 @@ public:
 
     void setZeroUsed();
 
-    Position chooseRegion(int radius);
     Position getPlayer();
+
+    void markRegion(Position center, int radius, bool value);
+    void clearReady();
     };

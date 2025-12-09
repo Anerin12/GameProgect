@@ -11,8 +11,6 @@ class Player : public Character{
         int level_;
         int score_;
         std::string weapon_;
-
-        //lb2
         std::unique_ptr<Hand> hand_;
 
     public:
@@ -27,19 +25,17 @@ class Player : public Character{
         void changeWeapon();
         void levelUp();
         void scoreUp();
-        void printStatus();
 
         //getters
         int getLevel() const;
         int getScore() const;
         std::string getWeapon() const;
-
-        //lb2
         Hand* getHand();
-        void useTrap();
-        void deliteTrap(Position position);
 
+        //setters
         void setWeapon(std::string weapon);
         void setLevel(int lvl);
         void setScore(int score);
+        
+        
 };

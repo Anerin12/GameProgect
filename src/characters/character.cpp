@@ -12,9 +12,9 @@ void Character::takeDamage(int damage)
 }
 
 bool Character::isAlive() { return health_ > 0; }
-bool Character::thisIsSlow(){return isSlow;}
-int Character::getDamage() { return damage_; }
-int Character::getHealth() { return health_; }
+bool Character::thisIsSlow() {return isSlow;}
+int Character::getDamage() const { return damage_; }
+int Character::getHealth() const { return health_; }
 
 Position Character::getPosition() { return position_; }
 

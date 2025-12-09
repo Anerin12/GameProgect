@@ -7,7 +7,9 @@
 #include "field/field.h"
 #include "characters/ally.h"
 
+
 class EnemyManager;
+class InputManager;
 
 class SpellManager{
     private:
@@ -26,12 +28,13 @@ class SpellManager{
             SpellManager(SpellManager &&) = default;
             SpellManager &operator=(SpellManager &&) = default;
 
-            void cast(ISpellCard &base, Field &field, EnemyManager &enM, Hand *hand);
-            void cast(AreaSpell &spell, Field &field, EnemyManager &enM, Hand *hand);
-            void cast(DirectSpell &spell, Field &field, EnemyManager &enM, Hand *hand);
-            void cast(CallSpell &spell, Field &field, EnemyManager &enM, Hand *hand);
-            void cast(TrapSpell &spell, Field &field, EnemyManager &enM, Hand *hand);
-            void cast(ImproveSpell &spell, Field &field, EnemyManager &enM, Hand *hand);
+
+            void cast(ISpellCard &base, Field &field, EnemyManager &enM,  Position target);
+            void cast(AreaSpell &spell, Field &field, EnemyManager &enM,  Position target);
+            void cast(DirectSpell &spell, Field &field, EnemyManager &enM,  Position target);
+            void cast(TrapSpell &spell, Field &field, EnemyManager &enM,  Position target);
+            void cast(CallSpell &spell, Field &field, EnemyManager &enM,  Position target);
+            void cast(ImproveSpell &spell, Field &field, EnemyManager &enM, Hand *hand, int opt); 
 
             int getTrapDamage();
             void deliteTrap(Position pos);

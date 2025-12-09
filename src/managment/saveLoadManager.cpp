@@ -2,7 +2,7 @@
 
 SaveLoadManager::SaveLoadManager(){}
 
-void SaveLoadManager::save(SpellManager &spellManager_, EnemyManager &enemyManager_, Field &field_, Player &player_, int level_)
+void SaveLoadManager::save(std::string filename, SpellManager &spellManager_, EnemyManager &enemyManager_, Field &field_, Player &player_, int level_)
 {
     namespace fs = std::filesystem;
 
@@ -10,10 +10,6 @@ void SaveLoadManager::save(SpellManager &spellManager_, EnemyManager &enemyManag
     const auto &enemies_ = enemyManager_.getEnemy();
     const auto &enemyHuts_ = enemyManager_.getEnemyHut();
     const auto &towers_ = enemyManager_.getTowers();
-
-    std::string filename;
-    std::cout << "Input save name: ";
-    std::cin >> filename;
 
     fs::path saveDir = "../save";
 
@@ -96,57 +92,11 @@ void SaveLoadManager::save(SpellManager &spellManager_, EnemyManager &enemyManag
     }
 }
 
-void SaveLoadManager::load(SpellManager &spellManager_, EnemyManager &enemyManager_, Field &field_, Player &player_, int &level_)
+void SaveLoadManager::load(std::string filePath, SpellManager &spellManager_, EnemyManager &enemyManager_, Field &field_, Player &player_, int &level_)
 {
     namespace fs = std::filesystem;
-    fs::path folderPath = "../save";
-    std::vector<std::string> saves;
 
-    int i = 0;
-    for (const auto &entry : fs::directory_iterator(folderPath))
-    {
-        if (entry.is_regular_file())
-        {
-            std::string fileName = entry.path().filename().string();
-            std::string filePath = entry.path().string();
-            std::cout << i++ << ". " << fileName << std::endl;
-            saves.push_back(filePath);
-        }
-    }
-
-    if (saves.empty())
-    {
-        std::cerr << "Нет сохранений в папке!" << std::endl;
-        return;
-    }
-
-    int opt = -1;
-    while (true)
-    {
-        try
-        {
-            std::cout << "Choose save: ";
-            if (!(std::cin >> opt))
-            {
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                throw std::runtime_error("Некорректный ввод. Введите число.");
-            }
-
-            if (opt < 0 || opt >= saves.size())
-            {
-                throw std::out_of_range("Неверный индекс сохранения.");
-            }
-
-            break; 
-        }
-        catch (const std::exception &e)
-        {
-            std::cerr << "Ошибка: " << e.what() << std::endl;
-        }
-    }
-
-    fs::path filepath = saves[opt];
+    fs::path filepath = filePath;
 
     std::ifstream in(filepath);
     if (!in.is_open())
@@ -155,11 +105,7 @@ void SaveLoadManager::load(SpellManager &spellManager_, EnemyManager &enemyManag
         return;
     }
 
-    enemyManager_.cleanEnemies();
-    spellManager_.cleanAlly();
-
-    std::vector<std::vector<int>> loadField;
-    std::vector<std::string> spells;
+    
 
     std::string time;
     std::getline(in, time);
@@ -168,10 +114,9 @@ void SaveLoadManager::load(SpellManager &spellManager_, EnemyManager &enemyManag
     auto sctp = std::chrono::clock_cast<std::chrono::system_clock>(ftime);
     std::time_t cftime = std::chrono::system_clock::to_time_t(sctp);
     std::string timestr = std::string(std::ctime(&cftime));
-    timestr.pop_back(); // убрать символ новой строки
+    timestr.pop_back(); 
     time.erase(time.begin());
 
-    std::cout << time << timestr << std::endl;
     if (time != timestr)
     {
         std::cerr << "Файл поврежден или некорректная дата: " << filepath << std::endl;
@@ -181,6 +126,12 @@ void SaveLoadManager::load(SpellManager &spellManager_, EnemyManager &enemyManag
     int hl, dm, lvl, sc;
     Position pos{-1, -1};
     std::string wp;
+
+    enemyManager_.cleanEnemies();
+    spellManager_.cleanAlly();
+
+    std::vector<std::vector<int>> loadField;
+    std::vector<std::string> spells;
 
     std::string type;
     while (in >> type)

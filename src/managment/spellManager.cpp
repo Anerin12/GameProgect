@@ -6,85 +6,57 @@
 
 SpellManager::SpellManager() {};
 
-void SpellManager::cast(ISpellCard &base, Field &field, EnemyManager &enM, Hand *hand)
+
+
+void SpellManager::cast(AreaSpell &spell, Field &field, EnemyManager &enM, Position target)
 {
 
-    if (auto *as = dynamic_cast<AreaSpell *>(&base))
-        return cast(*as, field, enM, hand);
-    if (auto *ds = dynamic_cast<DirectSpell *>(&base))
-        return cast(*ds, field, enM, hand);
-    if (auto *cs = dynamic_cast<CallSpell *>(&base))
-        return cast(*cs, field, enM, hand);
-    if (auto *ts = dynamic_cast<TrapSpell *>(&base))
-        return cast(*ts, field, enM, hand);
-    if (auto *is = dynamic_cast<ImproveSpell *>(&base))
-        return cast(*is, field, enM, hand);
+    std::cout << target.x << ' ' << target.y << ' ' << spell.getRadius() << std::endl;
 
-    throw std::runtime_error("Unknown spell type");
-}
+    std::vector<Position> enP = field.enHInRadius(target, spell.getRadius());
 
+    if (enP.empty()){
+        field.clearReady();
+        return;
+    }
 
-
-void SpellManager::cast(AreaSpell &spell, Field &field, EnemyManager &enM, Hand *hand)
-{
-    Position center = field.chooseRegion(spell.getRadius());
-    std::vector<Position> enP = field.enHInRadius(center, spell.getRadius());
-
-    for (auto pos : enP){
+    for (auto pos : enP)
+    {
         enM.setDamage(pos, spell.use().first);
     }
+    
+    field.clearReady();
 }
 
-void SpellManager::cast(DirectSpell &spell, Field &field, EnemyManager &enM, Hand *hand)
+void SpellManager::cast(DirectSpell &spell, Field &field, EnemyManager &enM, Position target)
 {
-    Position plPos = field.getPlayer();
-    std::vector<Position> enemy = field.enHInRadius(plPos, spell.getRadius());
-    std::cout << spell.getRadius() << std::endl;
-    if (enemy.empty()){
-        std::cout << "Враги не найдены" << std::endl;
-        return;
-    }
-    int i = 1;
-    for (auto en : enemy){
-        std::cout << i++ << '.' << " Enemy: " << "(" << en.x << ", " << en.y << ")" << std::endl;
-    }
 
-    int num;
-    std::cin >> num;
-
-    if(num > enemy.size()){
-        std::cout << "Некорректный ввод" << std::endl;
-        return;
-    }
-
-    enM.setDamage(enemy[num-1], spell.use().first);
+    enM.setDamage(target, spell.use().first);
 }
 
-void SpellManager::cast(CallSpell &spell, Field &field, EnemyManager &enM, Hand *hand)
+void SpellManager::cast(CallSpell &spell, Field &field, EnemyManager &enM, Position target)
 {
     Position newPos = field.getPlayer();
     newPos.y++;
 
-    if(field.isFree(newPos)){
-        allies_.push_back(std::make_unique<Ally>(100, 10, newPos));
-        field.addAlly(newPos);
+    for (int i = 0; i < spell.use().first; i++){
+        if(field.isFree(newPos)){
+            allies_.push_back(std::make_unique<Ally>(100, 10, newPos));
+            field.addAlly(newPos);
+        }
+        newPos.x++;
     }
 }
 
-void SpellManager::cast(TrapSpell &spell, Field &field, EnemyManager &enM, Hand *hand)
+void SpellManager::cast(TrapSpell &spell, Field &field, EnemyManager &enM, Position target)
 {
-    Position newPos = field.getPlayer();
-    traps_.push_back(std::make_unique<TrapSpell>(10, newPos));
-    field.addTrap(newPos);
+    traps_.push_back(std::make_unique<TrapSpell>(10, target));
+    field.addTrap(target);
 }
-void SpellManager::cast(ImproveSpell &spell, Field &field, EnemyManager &enM, Hand *hand)
+
+void SpellManager::cast(ImproveSpell &spell, Field &field, EnemyManager &enM, Hand *hand, int opt)
 {
     const auto& spells = hand->getSpells();
-
-    hand->printHand();
-
-    int opt;
-    std::cin >> opt;
 
     spell.use(*spells[opt-1]);
 }

@@ -40,15 +40,6 @@ void Player::scoreUp(){
     this->score_+=10;
 }
 
-void Player::printStatus(){
-    std::cout << std::string(50, '_') << std::endl;
-    std::cout << "Level: " << level_ << std::endl;
-    std::cout << "Score: " << score_ << std::endl;
-    std::cout << "Health: " << this->getHealth() << std::endl;
-    std::cout << "Weapon: " << weapon_ << std::endl;
-    std::cout << std::string(50, '_') << std::endl;
-}
-
 
 void Player::setWeapon(std::string weapon){this->weapon_ = weapon;}
 void Player::setLevel(int lvl){this->level_ = lvl;}
